@@ -21,6 +21,8 @@ public class Profile {
     @Column(nullable = false)
     private String name;
 
+    private String profileImage;
+
     private String greeting;
 
     @Column(name = "created_at", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -39,4 +41,9 @@ public class Profile {
         this.member = member;
     }
 
+    public void update(String name, String profileImage, String greeting) {
+        this.name = name;
+        this.profileImage = profileImage;
+        this.greeting = greeting;
+    }
 }

@@ -7,9 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sparta.UserService.dto.SignUpRequestDto;
 import sparta.UserService.dto.SignUpResponseDto;
+import sparta.UserService.dto.UpdateProfileRequestDto;
+import sparta.UserService.dto.UpdateProfileResponseDto;
 import sparta.UserService.entity.Member;
 import sparta.UserService.entity.Profile;
 import sparta.UserService.repository.MemberRepository;
+import sparta.UserService.repository.ProfileRepository;
 
 import java.util.Optional;
 
@@ -20,6 +23,8 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    private final ProfileRepository profileRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -36,6 +41,15 @@ public class MemberService {
         memberRepository.save(encoding);
 
         return SignUpResponseDto.of(encoding);
+    }
+
+    @Transactional
+    public UpdateProfileResponseDto updateProfile(UpdateProfileRequestDto dto) {
+        Profile profile = profileRepository.findByMemberId(dto.getMemberId()).orElseThrow();
+
+        profile.update(dto.getName(), dto.getProfileImg(), dto.getGreeting());
+
+        return UpdateProfileResponseDto.of(profile);
     }
 
 }

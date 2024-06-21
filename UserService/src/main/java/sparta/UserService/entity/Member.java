@@ -47,8 +47,4 @@ public class Member {
         this.profile = new Profile(name, this);
     }
 
-    public void update(String email) {
-        this.email =  email;
-    }
-
 }
