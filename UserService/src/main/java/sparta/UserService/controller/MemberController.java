@@ -5,10 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sparta.UserService.dto.SignUpRequestDto;
-import sparta.UserService.dto.SignUpResponseDto;
-import sparta.UserService.dto.UpdateProfileRequestDto;
-import sparta.UserService.dto.UpdateProfileResponseDto;
+import sparta.UserService.dto.*;
 import sparta.UserService.service.MemberService;
 
 @RestController
@@ -26,5 +23,10 @@ public class MemberController {
     @GetMapping("/update-profile")
     public UpdateProfileResponseDto updateProfile(@RequestBody UpdateProfileRequestDto dto) {
         return memberService.updateProfile(dto);
+    }
+
+    @GetMapping("/login")
+    public LoginResponseDto login(@RequestBody LoginRequestDto dto) {
+        return memberService.login(dto);
     }
 }
