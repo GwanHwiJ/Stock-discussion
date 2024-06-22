@@ -101,4 +101,19 @@ public class MemberService {
                 .set(dto.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
     }
 
+    public void changePassword(PasswordChangeRequestDto dto) {
+        Optional<Member> memberOptional = memberRepository.findById(dto.getMemberId());
+        if (memberOptional.isEmpty()) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+        }
+
+        Member member = memberOptional.get();
+
+        if (!bCryptPasswordEncoder.matches(dto.getCurrentPassword(), member.getPassword())) {
+            throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        member.updatePassword(bCryptPasswordEncoder.encode(dto.getNewPassword()));
+        memberRepository.save(member);
+    }
 }

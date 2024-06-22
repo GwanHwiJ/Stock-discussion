@@ -47,4 +47,8 @@ public class Member {
         this.profile = new Profile(name, this);
     }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
 }
