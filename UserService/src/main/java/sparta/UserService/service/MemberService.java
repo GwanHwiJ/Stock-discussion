@@ -83,5 +83,22 @@ public class MemberService {
         return LoginResponseDto.of(principal, tokenDto);
     }
 
+    public void logout(TokenRequestDto dto) {
+        if (!jwtProvider.validateToken(dto.getAccessToken())) {
+            log.info("잘못된 요청입니다."); //에러 처리
+            throw new RuntimeException(); // 인증되지 않은 사용자 예외 처리
+        }
+
+        Authentication authentication = jwtProvider.getAuthentication(dto.getAccessToken());
+
+        if (redisTemplate.opsForValue().get("RT:" + authentication.getName()) != null) {
+            //refresh token 삭제
+            redisTemplate.delete("RT:" + authentication.getName());
+        }
+
+        Long expiration = jwtProvider.getExpiration(dto.getAccessToken());
+        redisTemplate.opsForValue()
+                .set(dto.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+    }
 
 }

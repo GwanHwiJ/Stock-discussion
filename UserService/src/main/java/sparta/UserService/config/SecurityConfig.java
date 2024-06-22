@@ -3,6 +3,7 @@ package sparta.UserService.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import sparta.UserService.config.jwt.JwtFilter;
+import sparta.UserService.config.jwt.JwtProvider;
 
 import java.util.Arrays;
 
@@ -22,6 +25,10 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtProvider jwtProvider;
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -45,8 +52,8 @@ public class SecurityConfig {
                 );
         http
                 .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable);
-//                .addFilterBefore(new JwtFilter(jwtProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new JwtFilter(jwtProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
 //        http    .exceptionHandling(configurer -> configurer.authenticationEntryPoint(customAuthenticationEntryPoint)
 //                .accessDeniedHandler(customAccessdeniedHandler));
         return http.build();

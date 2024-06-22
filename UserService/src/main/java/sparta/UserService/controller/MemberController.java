@@ -1,10 +1,7 @@
 package sparta.UserService.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sparta.UserService.dto.*;
 import sparta.UserService.service.MemberService;
 
@@ -28,5 +25,10 @@ public class MemberController {
     @GetMapping("/login")
     public LoginResponseDto login(@RequestBody LoginRequestDto dto) {
         return memberService.login(dto);
+    }
+
+    @GetMapping("/logout")
+    public void logout(@RequestBody TokenRequestDto tokenRequestDto) {
+        memberService.logout(tokenRequestDto);
     }
 }
