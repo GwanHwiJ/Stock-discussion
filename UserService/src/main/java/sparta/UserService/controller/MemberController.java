@@ -12,22 +12,22 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/signup")
+    @PostMapping("/signup")
     public SignUpResponseDto createUser(@RequestBody SignUpRequestDto dto) {
         return memberService.createMember(dto);
     }
 
-    @GetMapping("/update-profile")
+    @PostMapping("/update-profile")
     public UpdateProfileResponseDto updateProfile(@RequestBody UpdateProfileRequestDto dto) {
         return memberService.updateProfile(dto);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginRequestDto dto) {
         return memberService.login(dto);
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public void logout(@RequestBody TokenRequestDto tokenRequestDto) {
         memberService.logout(tokenRequestDto);
     }
