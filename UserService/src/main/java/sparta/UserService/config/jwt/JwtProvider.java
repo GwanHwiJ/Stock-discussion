@@ -150,4 +150,10 @@ public class JwtProvider {
         return (expiration.getTime() - now);
     }
 
+    public Long getUserIdFromToken(String token) {
+        Claims claims = parseClaims(token);
+
+        return Long.parseLong(claims.get("member_id").toString());
+    }
+
 }
