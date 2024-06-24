@@ -43,4 +43,10 @@ public class Board {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Like> likes;
 
+    public Board(String title, String image, String description, Member member) {
+        this.title = title;
+        this.image = image;
+        this.description = description;
+        this.member = member;
+    }
 }
