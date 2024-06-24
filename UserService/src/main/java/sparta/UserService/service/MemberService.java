@@ -1,14 +1,17 @@
 package sparta.UserService.service;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import sparta.UserService.config.CustomUserDetails;
 import sparta.UserService.config.jwt.JwtProvider;
 import sparta.UserService.dto.*;
@@ -19,6 +22,7 @@ import sparta.UserService.repository.ProfileRepository;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -83,22 +87,22 @@ public class MemberService {
         return LoginResponseDto.of(principal, tokenDto);
     }
 
-    public void logout(TokenRequestDto dto) {
-        if (!jwtProvider.validateToken(dto.getAccessToken())) {
+    public void logout(String accessToken) {
+        if (!jwtProvider.validateToken(accessToken)) {
             log.info("잘못된 요청입니다."); //에러 처리
             throw new RuntimeException(); // 인증되지 않은 사용자 예외 처리
         }
 
-        Authentication authentication = jwtProvider.getAuthentication(dto.getAccessToken());
+        Authentication authentication = jwtProvider.getAuthentication(accessToken);
 
         if (redisTemplate.opsForValue().get("RT:" + authentication.getName()) != null) {
             //refresh token 삭제
             redisTemplate.delete("RT:" + authentication.getName());
         }
 
-        Long expiration = jwtProvider.getExpiration(dto.getAccessToken());
+        Long expiration = jwtProvider.getExpiration(accessToken);
         redisTemplate.opsForValue()
-                .set(dto.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
+                .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
     }
 
     public void changePassword(PasswordChangeRequestDto dto) {
@@ -116,4 +120,20 @@ public class MemberService {
         member.updatePassword(bCryptPasswordEncoder.encode(dto.getNewPassword()));
         memberRepository.save(member);
     }
+
+    public String refreshAccessToken(String expiredAccessToken) {
+        Authentication authentication = jwtProvider.getAuthentication(expiredAccessToken);
+
+        String refreshToken = redisTemplate.opsForValue().get("RT:" + authentication.getName());
+
+        if (refreshToken == null || !jwtProvider.validateToken(refreshToken)) {
+            log.info("다시 로그인 해주세요.");
+            throw new RuntimeException("Invalid refresh token");
+        }
+
+        log.info("refreshToken: " + refreshToken);
+
+        return jwtProvider.generateAccessToken(authentication);
+    }
+
 }

@@ -51,13 +51,7 @@ public class JwtProvider {
 
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
-        String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())  // payload "sub": "email"
-                .claim("member_id", principal.getMemberId()) // payload "member_id": "Long"
-                .claim(AUTHORITIES_KEY, authorities)   // payload "auth": "role"
-                .setExpiration(accessTokenExpiresIn)   // payload "exp": 1516239022 (예시)
-                .signWith(private_key, SignatureAlgorithm.HS512)  // header "alg": "HS512" -> HS512: HMAC using SHA-512
-                .compact();
+        String accessToken = generateAccessToken(authentication);
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
@@ -77,6 +71,24 @@ public class JwtProvider {
                 .accessTokenExpireIn(ACCESS_TOKEN_EXPIRE_TIME)
                 .authority(authorities)
                 .build();
+    }
+
+    public String generateAccessToken(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
+        long now = (new Date()).getTime();
+        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())  // payload "sub": "email"
+                .claim("member_id", principal.getMemberId()) // payload "member_id": "Long"
+                .claim(AUTHORITIES_KEY, authorities)   // payload "auth": "role"
+                .setExpiration(accessTokenExpiresIn)   // payload "exp": 1516239022 (예시)
+                .signWith(private_key, SignatureAlgorithm.HS512)  // header "alg": "HS512" -> HS512: HMAC using SHA-512
+                .compact();
     }
 
     public Authentication getAuthentication(String accessToken) {

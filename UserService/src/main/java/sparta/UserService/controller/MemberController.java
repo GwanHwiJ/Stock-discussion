@@ -1,5 +1,6 @@
 package sparta.UserService.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +30,8 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public void logout(@RequestBody TokenRequestDto tokenRequestDto) {
-        memberService.logout(tokenRequestDto);
+    public void logout(HttpServletRequest request) {
+        memberService.logout(getMemberToken(request));
     }
 
     @PostMapping("/change-password")
@@ -39,4 +40,12 @@ public class MemberController {
         return ResponseEntity.ok("비밀번호가 변경되었습니다.");
     }
 
+    @PostMapping("/reissue-accessToken")
+    public String reissueAccessToken(HttpServletRequest request) {
+        return memberService.refreshAccessToken(getMemberToken(request));
+    }
+
+    private String getMemberToken(HttpServletRequest request) {
+        return (String) request.getAttribute("token");
+    }
 }

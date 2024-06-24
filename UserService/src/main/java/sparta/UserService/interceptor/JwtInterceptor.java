@@ -18,6 +18,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = resolveToken(request);
         if (token != null && jwtProvider.validateToken(token)) {
+            request.setAttribute("token", token);
             Long memberId = jwtProvider.getUserIdFromToken(token);
             request.setAttribute("member_id", memberId);
         }
