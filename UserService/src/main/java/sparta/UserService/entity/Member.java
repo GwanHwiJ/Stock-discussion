@@ -37,6 +37,12 @@ public class Member {
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Board> boards;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     private Profile profile;
 
