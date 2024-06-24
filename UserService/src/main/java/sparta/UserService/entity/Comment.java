@@ -37,4 +37,10 @@ public class Comment {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     private List<Like> likes;
+
+    public Comment(String content, Member member, Board board) {
+        this.content = content;
+        this.member = member;
+        this.board = board;
+    }
 }
