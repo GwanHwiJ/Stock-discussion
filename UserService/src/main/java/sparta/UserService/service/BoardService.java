@@ -21,6 +21,7 @@ public class BoardService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional
     public CreateBoardResponseDto createBoard(Long memberId, CreateBoardRequestDto dto) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         Board board = new Board(dto.getTitle(), dto.getImage(), dto.getDescription(), member);

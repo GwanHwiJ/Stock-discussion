@@ -24,6 +24,7 @@ public class FollowService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional
     public FollowUserResponseDto followUser(Long followerId, Long followingId) {
         if(followingId.equals(followerId)){
             throw new RuntimeException("자기 자신을 팔로우 할 수 없습니다.");

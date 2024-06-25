@@ -66,6 +66,7 @@ public class MemberService {
         return UpdateProfileResponseDto.of(profile);
     }
 
+    @Transactional
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
@@ -105,6 +106,7 @@ public class MemberService {
                 .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
     }
 
+    @Transactional
     public void changePassword(PasswordChangeRequestDto dto) {
         Optional<Member> memberOptional = memberRepository.findById(dto.getMemberId());
         if (memberOptional.isEmpty()) {

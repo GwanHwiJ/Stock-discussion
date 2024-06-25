@@ -28,6 +28,7 @@ public class CommentService {
 
     private final BoardRepository boardRepository;
 
+    @Transactional
     public CreateCommentResponseDto addComment(Long memberId, Long boardId, String content) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         Board board = boardRepository.findById(boardId).orElseThrow();
