@@ -9,7 +9,7 @@ import sparta.UserService.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class MemberController {
 
     private final MemberService memberService;
